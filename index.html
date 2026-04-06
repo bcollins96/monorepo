@@ -1,0 +1,537 @@
+	
+	<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cookbook+</title>
+<link rel="apple-touch-icon" href="icon.png">
+<style>
+	:root {
+		--bg: #0f1115;
+		--bg-card: #1d212b;
+		--text: #f3f4f6;
+		--muted: #a7adbb;
+		--border: #2b3140;
+		--accent: #f4b860;
+		--shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+		--radius: 18px;
+	}
+
+	* {
+		box-sizing: border-box;
+	}
+
+	body {
+		margin: 0;
+		font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+		background: var(--bg);
+		color: var(--text);
+	}
+
+	button,
+	input {
+		font: inherit;
+	}
+
+	.hidden {
+		display: none !important;
+	}
+
+	.header {
+		position: sticky;
+		top: 0;
+		z-index: 20;
+		background: rgba(15, 17, 21, 0.92);
+		backdrop-filter: blur(12px);
+		padding: 14px;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+	}
+
+	.header-title {
+		font-size: 24px;
+		font-weight: 700;
+		margin: 0 0 12px;
+	}
+
+	.search {
+		width: 100%;
+		padding: 14px 16px;
+		border-radius: 14px;
+		border: 1px solid var(--border);
+		background: var(--bg-card);
+		color: var(--text);
+		outline: none;
+		margin-bottom: 10px;
+	}
+
+	.search::placeholder {
+		color: var(--muted);
+	}
+
+	.filters {
+		display: flex;
+		gap: 8px;
+		overflow-x: auto;
+		scrollbar-width: none;
+		-webkit-overflow-scrolling: touch;
+	}
+
+	.filters::-webkit-scrollbar {
+		display: none;
+	}
+
+	.filter-chip {
+		border: 1px solid var(--border);
+		background: var(--bg-card);
+		color: var(--text);
+		padding: 10px 14px;
+		border-radius: 999px;
+		white-space: nowrap;
+		cursor: pointer;
+	}
+
+	.filter-chip.active {
+		background: var(--accent);
+		color: #17120a;
+		border-color: var(--accent);
+		font-weight: 700;
+	}
+
+	.screen {
+		padding: 14px;
+		max-width: 900px;
+		margin: 0 auto;
+	}
+
+	.grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 14px;
+	}
+
+	.card {
+		background: var(--bg-card);
+		border-radius: var(--radius);
+		overflow: hidden;
+		box-shadow: var(--shadow);
+		border: 1px solid rgba(255, 255, 255, 0.04);
+		cursor: pointer;
+	}
+
+	.card img {
+		width: 100%;
+		height: 180px;
+		object-fit: cover;
+		display: block;
+	}
+
+	.card-body {
+		padding: 12px;
+	}
+
+	.card-category {
+		font-size: 12px;
+		color: var(--muted);
+		margin-bottom: 6px;
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+	}
+
+	.card-title {
+		font-size: 16px;
+		font-weight: 700;
+		line-height: 1.3;
+	}
+
+	.empty-state {
+		background: var(--bg-card);
+		border: 1px solid rgba(255, 255, 255, 0.04);
+		border-radius: var(--radius);
+		padding: 24px;
+		text-align: center;
+		color: var(--muted);
+	}
+
+	.detail-header {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		margin-bottom: 14px;
+	}
+
+	.back-btn {
+		border: 0;
+		background: var(--bg-card);
+		color: var(--text);
+		width: 42px;
+		height: 42px;
+		border-radius: 999px;
+		cursor: pointer;
+		flex: 0 0 auto;
+		border: 1px solid var(--border);
+	}
+
+	.detail-title-wrap {
+		min-width: 0;
+	}
+
+	.detail-kicker {
+		color: var(--muted);
+		font-size: 12px;
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+		margin-bottom: 4px;
+	}
+
+	.detail-title {
+		margin: 0;
+		font-size: 24px;
+		line-height: 1.2;
+	}
+
+	.hero {
+		width: 100%;
+		height: 280px;
+		object-fit: cover;
+		display: block;
+		border-radius: 22px;
+		margin-bottom: 18px;
+		box-shadow: var(--shadow);
+	}
+
+	.meta-row {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		margin-bottom: 18px;
+	}
+
+	.meta-pill {
+		padding: 8px 12px;
+		border-radius: 999px;
+		background: var(--bg-card);
+		border: 1px solid var(--border);
+		color: var(--text);
+		font-size: 13px;
+	}
+
+	.section-title {
+		margin: 20px 0 10px;
+		font-size: 18px;
+		font-weight: 700;
+	}
+
+	.ingredients-list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.ingredients-list li {
+		margin-bottom: 6px;
+		line-height: 1.5;
+	}
+
+	.ingredient-check {
+		display: flex;
+		align-items: flex-start;
+		gap: 10px;
+		padding: 8px 0;
+		cursor: pointer;
+		-webkit-tap-highlight-color: transparent;
+	}
+
+	.ingredient-check input[type="checkbox"] {
+		appearance: none;
+		-webkit-appearance: none;
+		width: 22px;
+		height: 22px;
+		min-width: 22px;
+		border-radius: 6px;
+		border: 2px solid var(--border);
+		background: var(--bg);
+		cursor: pointer;
+		margin: 0;
+		position: relative;
+		top: 1px;
+	}
+
+	.ingredient-check input[type="checkbox"]:checked {
+		background: var(--accent);
+		border-color: var(--accent);
+	}
+
+	.ingredient-check input[type="checkbox"]:checked::after {
+		content: "✓";
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		color: #17120a;
+		font-size: 14px;
+		font-weight: 700;
+	}
+
+	.ingredient-check.checked span {
+		text-decoration: line-through;
+		color: var(--muted);
+	}
+
+	.instructions-list {
+		margin: 0;
+		padding-left: 20px;
+	}
+
+	.instructions-list li {
+		margin-bottom: 10px;
+		line-height: 1.5;
+	}
+
+	.instructions-list li::marker {
+		color: var(--accent);
+		font-weight: 700;
+	}
+
+	.nutrition-bar {
+		display: flex;
+		gap: 6px;
+		flex-wrap: wrap;
+		margin-bottom: 18px;
+	}
+
+	.nutrition-item {
+		background: var(--bg-card);
+		border: 1px solid var(--border);
+		border-radius: 14px;
+		padding: 10px 14px;
+		text-align: center;
+		flex: 1 1 0;
+		min-width: 70px;
+	}
+
+	.nutrition-value {
+		font-size: 18px;
+		font-weight: 700;
+		color: var(--accent);
+		line-height: 1;
+	}
+
+	.nutrition-label {
+		font-size: 11px;
+		color: var(--muted);
+		margin-top: 4px;
+		text-transform: uppercase;
+		letter-spacing: 0.03em;
+	}
+
+	@media (min-width: 700px) {
+		.card img {
+			height: 220px;
+		}
+
+		.hero {
+			height: 380px;
+		}
+	}
+</style>
+</head>
+<body>
+	<div id="listScreen">
+		<header class="header">
+			<h1 class="header-title">Cookbook+</h1>
+			<input id="searchInput" class="search" type="text" placeholder="Search recipes, ingredients, or categories...">
+			<div id="categoryFilters" class="filters"></div>
+		</header>
+
+		<main class="screen">
+			<div id="recipeGrid" class="grid"></div>
+		</main>
+	</div>
+
+	<div id="detailScreen" class="hidden">
+		<header class="header">
+			<div class="detail-header">
+				<button id="backBtn" class="back-btn">←</button>
+				<div class="detail-title-wrap">
+					<div id="detailCategory" class="detail-kicker"></div>
+					<h1 id="detailTitle" class="detail-title"></h1>
+				</div>
+			</div>
+		</header>
+
+		<main class="screen">
+			<img id="detailImage" class="hero" src="" alt="">
+			<div id="detailMeta" class="meta-row"></div>
+			<div id="detailNutrition" class="nutrition-bar"></div>
+
+			<h2 class="section-title">Ingredients</h2>
+			<ul id="detailIngredients" class="ingredients-list"></ul>
+
+			<h2 class="section-title">Instructions</h2>
+			<ol id="detailInstructions" class="instructions-list"></ol>
+		</main>
+	</div>
+
+	<script src="recipes.js"></script>
+	<script>
+	const listScreen = document.getElementById("listScreen");
+	const detailScreen = document.getElementById("detailScreen");
+	const recipeGrid = document.getElementById("recipeGrid");
+	const searchInput = document.getElementById("searchInput");
+	const categoryFilters = document.getElementById("categoryFilters");
+	const backBtn = document.getElementById("backBtn");
+
+	const detailCategory = document.getElementById("detailCategory");
+	const detailTitle = document.getElementById("detailTitle");
+	const detailImage = document.getElementById("detailImage");
+	const detailMeta = document.getElementById("detailMeta");
+	const detailNutrition = document.getElementById("detailNutrition");
+	const detailIngredients = document.getElementById("detailIngredients");
+	const detailInstructions = document.getElementById("detailInstructions");
+
+	const safeRecipes = Array.isArray(recipes) ? recipes : [];
+	let activeCategory = "All";
+
+	function getCategories() {
+		return ["All", ...new Set(safeRecipes.map(recipe => recipe.category))];
+	}
+
+	function renderCategoryFilters() {
+		const categories = getCategories();
+
+		categoryFilters.innerHTML = categories.map(category => `
+			<button
+				class="filter-chip ${category === activeCategory ? "active" : ""}"
+				data-category="${category}"
+			>
+				${category}
+			</button>
+		`).join("");
+
+		Array.from(categoryFilters.querySelectorAll(".filter-chip")).forEach(button => {
+			button.addEventListener("click", () => {
+				activeCategory = button.dataset.category;
+				renderCategoryFilters();
+				renderRecipes();
+			});
+		});
+	}
+
+	function getFilteredRecipes() {
+		const query = searchInput.value.trim().toLowerCase();
+
+		return safeRecipes.filter(recipe => {
+			const matchesCategory =
+				activeCategory === "All" || recipe.category === activeCategory;
+
+			const matchesSearch =
+				recipe.name.toLowerCase().includes(query) ||
+				recipe.category.toLowerCase().includes(query) ||
+				recipe.ingredients.some(ingredient => ingredient.toLowerCase().includes(query));
+
+			return matchesCategory && matchesSearch;
+		});
+	}
+
+	function renderRecipes() {
+		const filteredRecipes = getFilteredRecipes();
+
+		if (!filteredRecipes.length) {
+			recipeGrid.innerHTML = `
+				<div class="empty-state" style="grid-column: 1 / -1;">
+					No recipes found.
+				</div>
+			`;
+			return;
+		}
+
+		recipeGrid.innerHTML = filteredRecipes.map(recipe => `
+			<article class="card" data-recipe-id="${recipe.id}">
+				<img src="${recipe.image}" alt="${recipe.name}">
+				<div class="card-body">
+					<div class="card-category">${recipe.category}</div>
+					<div class="card-title">${recipe.name}</div>
+				</div>
+			</article>
+		`).join("");
+
+		Array.from(document.querySelectorAll(".card")).forEach(card => {
+			card.addEventListener("click", () => {
+				openRecipe(card.dataset.recipeId);
+			});
+		});
+	}
+
+	function openRecipe(recipeId) {
+		const recipe = safeRecipes.find(item => item.id === recipeId);
+		if (!recipe) {
+			return;
+		}
+
+		detailCategory.textContent = recipe.category;
+		detailTitle.textContent = recipe.name;
+		detailImage.src = recipe.image;
+		detailImage.alt = recipe.name;
+
+		const metaParts = [];
+		if (recipe.prep_time) metaParts.push(`<div class="meta-pill">Prep: ${recipe.prep_time}</div>`);
+		if (recipe.cook_time) metaParts.push(`<div class="meta-pill">Cook: ${recipe.cook_time}</div>`);
+		if (recipe.servings) metaParts.push(`<div class="meta-pill">Serves ${recipe.servings}</div>`);
+		detailMeta.innerHTML = metaParts.join("") + (recipe.source ? `
+	<div class="meta-pill">
+		<a href="${recipe.source}" target="_blank" style="color: var(--accent); text-decoration: none;">
+			View Source ↗
+		</a>
+	</div>
+` : "");
+
+		// nutrition
+		if (recipe.nutrition) {
+			const n = recipe.nutrition;
+			detailNutrition.innerHTML = `
+				<div class="nutrition-item"><div class="nutrition-value">${n.calories}</div><div class="nutrition-label">Calories</div></div>
+				<div class="nutrition-item"><div class="nutrition-value">${n.protein}g</div><div class="nutrition-label">Protein</div></div>
+				<div class="nutrition-item"><div class="nutrition-value">${n.carbs}g</div><div class="nutrition-label">Carbs</div></div>
+				<div class="nutrition-item"><div class="nutrition-value">${n.fat}g</div><div class="nutrition-label">Fat</div></div>
+				<div class="nutrition-item"><div class="nutrition-value">${n.fiber}g</div><div class="nutrition-label">Fiber</div></div>
+			`;
+		} else {
+			detailNutrition.innerHTML = "";
+		}
+
+		// ingredients with checkboxes
+		detailIngredients.innerHTML = recipe.ingredients
+			.map((item, i) => `
+				<li>
+					<label class="ingredient-check" id="ing-${i}">
+						<input type="checkbox" onchange="this.parentElement.classList.toggle('checked', this.checked)">
+						<span>${item}</span>
+					</label>
+				</li>
+			`)
+			.join("");
+
+		detailInstructions.innerHTML = recipe.instructions
+			.map(item => `<li>${item}</li>`)
+			.join("");
+
+		listScreen.classList.add("hidden");
+		detailScreen.classList.remove("hidden");
+		window.scrollTo(0, 0);
+	}
+
+	function goBack() {
+		detailScreen.classList.add("hidden");
+		listScreen.classList.remove("hidden");
+		window.scrollTo(0, 0);
+	}
+
+	searchInput.addEventListener("input", renderRecipes);
+	backBtn.addEventListener("click", goBack);
+
+	renderCategoryFilters();
+	renderRecipes();
+	</script>
+</body>
+</html>
